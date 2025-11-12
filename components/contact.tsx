@@ -7,14 +7,24 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Phone, Mail, MapPin } from "lucide-react"
 import DatePicker from "@/components/date-picker"
+import { supabase } from "@/lib/supabase"
 
 export default function Contact() {
   const [isVisible, setIsVisible] = useState(false)
   const sectionRef = useRef<HTMLElement>(null)
   const [checkInDate, setCheckInDate] = useState<Date | null>(null)
   const [checkOutDate, setCheckOutDate] = useState<Date | null>(null)
+  const [contactPhone1, setContactPhone1] = useState("+375 (29) 123-45-67")
+  const [contactPhone2, setContactPhone2] = useState("+375 (33) 765-43-21")
+  const [contactEmail, setContactEmail] = useState("info@murashki-lakes.by")
+  const [addressLine1, setAddressLine1] = useState("Беларусь, Брестская область")
+  const [addressLine2, setAddressLine2] = useState("Браславский район")
+  const [addressLine3, setAddressLine3] = useState("Озёра Мурашки")
+  const [coordinates, setCoordinates] = useState("Координаты: 55.6416° N, 27.0444° E")
 
   useEffect(() => {
+    loadSettings()
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -30,6 +40,25 @@ export default function Contact() {
 
     return () => observer.disconnect()
   }, [])
+
+  const loadSettings = async () => {
+    const { data } = await supabase
+      .from('site_settings')
+      .select('key, value')
+      .in('key', ['contact_phone_1', 'contact_phone_2', 'contact_email', 'contact_address_line1', 'contact_address_line2', 'contact_address_line3', 'contact_coordinates'])
+
+    if (data) {
+      data.forEach(setting => {
+        if (setting.key === 'contact_phone_1') setContactPhone1(setting.value)
+        if (setting.key === 'contact_phone_2') setContactPhone2(setting.value)
+        if (setting.key === 'contact_email') setContactEmail(setting.value)
+        if (setting.key === 'contact_address_line1') setAddressLine1(setting.value)
+        if (setting.key === 'contact_address_line2') setAddressLine2(setting.value)
+        if (setting.key === 'contact_address_line3') setAddressLine3(setting.value)
+        if (setting.key === 'contact_coordinates') setCoordinates(setting.value)
+      })
+    }
+  }
 
   return (
     <section id="contact" ref={sectionRef} className="py-24 md:py-32 bg-muted/30">
@@ -54,8 +83,8 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Телефон</h3>
-                    <p className="text-muted-foreground">+375 (29) 123-45-67</p>
-                    <p className="text-muted-foreground">+375 (33) 765-43-21</p>
+                    <p className="text-muted-foreground">{contactPhone1}</p>
+                    <p className="text-muted-foreground">{contactPhone2}</p>
                   </div>
                 </div>
               </CardContent>
@@ -69,7 +98,7 @@ export default function Contact() {
                   </div>
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Email</h3>
-                    <p className="text-muted-foreground">info@murashki-lakes.by</p>
+                    <p className="text-muted-foreground">{contactEmail}</p>
                   </div>
                 </div>
               </CardContent>
@@ -84,13 +113,13 @@ export default function Contact() {
                   <div>
                     <h3 className="font-semibold text-foreground mb-1">Адрес</h3>
                     <p className="text-muted-foreground">
-                      Беларусь, Брестская область
+                      {addressLine1}
                       <br />
-                      Браславский район
+                      {addressLine2}
                       <br />
-                      Озёра Мурашки
+                      {addressLine3}
                       <br />
-                      Координаты: 55.6416° N, 27.0444° E
+                      {coordinates}
                     </p>
                   </div>
                 </div>

@@ -3,13 +3,33 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ChevronDown } from "lucide-react"
+import { supabase } from "@/lib/supabase"
 
 export default function Hero() {
   const [isVisible, setIsVisible] = useState(false)
+  const [heroTitle, setHeroTitle] = useState("Дом на озёрах Мурашки")
+  const [heroSubtitle, setHeroSubtitle] = useState("Место, где природа говорит тише, а душа слышит громче")
+  const [heroButtonText, setHeroButtonText] = useState("Забронировать отдых")
 
   useEffect(() => {
     setIsVisible(true)
+    loadSettings()
   }, [])
+
+  const loadSettings = async () => {
+    const { data } = await supabase
+      .from('site_settings')
+      .select('key, value')
+      .in('key', ['hero_title', 'hero_subtitle', 'hero_button_text'])
+
+    if (data) {
+      data.forEach(setting => {
+        if (setting.key === 'hero_title') setHeroTitle(setting.value)
+        if (setting.key === 'hero_subtitle') setHeroSubtitle(setting.value)
+        if (setting.key === 'hero_button_text') setHeroButtonText(setting.value)
+      })
+    }
+  }
 
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
@@ -32,16 +52,16 @@ export default function Hero() {
         )}
       >
         <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 text-balance">
-          Дом на озёрах Мурашки
+          {heroTitle}
         </h1>
         <p className="text-xl md:text-2xl text-white/90 mb-8 text-pretty leading-relaxed">
-          Место, где природа говорит тише, а душа слышит громче
+          {heroSubtitle}
         </p>
         <Button
           size="lg"
           className="rounded-full px-8 py-6 text-lg shadow-2xl hover:shadow-primary/50 hover:scale-105 transition-all duration-300"
         >
-          Забронировать отдых
+          {heroButtonText}
         </Button>
       </div>
 
