@@ -35,11 +35,12 @@ export default function AdminPage() {
   }, [])
 
   const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession()
-    setIsAuthenticated(!!session)
-    if (session) {
-      await loadSettings()
-    }
+    // TODO: Implement actual Supabase authentication
+    // const { data: { session } } = await supabase.auth.getSession()
+    // setIsAuthenticated(!!session)
+    // if (session) {
+    //   await loadSettings()
+    // }
     setIsLoading(false)
   }
 
@@ -66,27 +67,34 @@ export default function AdminPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    // TODO: Implement actual Supabase authentication
+    // const { data, error } = await supabase.auth.signInWithPassword({
+    //   email,
+    //   password,
+    // })
+    //
+    // if (error) {
+    //   toast.error(error.message)
+    //   setIsLoading(false)
+    //   return
+    // }
+    //
+    // if (data.session) {
+    //   setIsAuthenticated(true)
+    //   await loadSettings()
+    //   toast.success('Successfully logged in')
+    // }
 
-    if (error) {
-      toast.error(error.message)
-      setIsLoading(false)
-      return
-    }
-
-    if (data.session) {
-      setIsAuthenticated(true)
-      await loadSettings()
-      toast.success('Successfully logged in')
-    }
+    // Temporary: Accept any credentials
+    setIsAuthenticated(true)
+    await loadSettings()
+    toast.success('Successfully logged in')
     setIsLoading(false)
   }
 
   const handleLogout = async () => {
-    await supabase.auth.signOut()
+    // TODO: Implement actual Supabase sign out
+    // await supabase.auth.signOut()
     setIsAuthenticated(false)
     toast.success('Successfully logged out')
   }
